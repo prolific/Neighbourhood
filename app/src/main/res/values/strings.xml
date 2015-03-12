@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Neighbourhood</string>
+    <string name="terms">Terms and Privacy Policy</string>
+    <string name="title_activity_places">Places</string>
+    <string name="title_activity_detail">Details</string>
+
+</resources>
