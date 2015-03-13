@@ -16,13 +16,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.fiktivo.neighbourhood.sync.NeighbourhoodSyncAdapter;
 
 public class PlacesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -68,9 +69,7 @@ public class PlacesFragment extends Fragment implements LoaderManager.LoaderCall
         });
         if (savedInstanceState != null && savedInstanceState.containsKey("selectedPosition"))
             selectedPosition = savedInstanceState.getInt("selectedPosition");
-        Log.v("Places", "ListView Created");
         if (isNetworkAvailable()) {
-            Log.v("Places", "Network Found");
             getCurrentLocationAndUpdatePlaces();
         } else
             Toast.makeText(getActivity(), "Please check your Internet Connection", Toast.LENGTH_LONG).show();
@@ -78,19 +77,10 @@ public class PlacesFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     public boolean isNetworkAvailable() {
-        Log.v("Places", "network check");
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void updatePlaces(Location currentLocation) {
-        Log.v("Location", "Location Found");
-        String location = currentLocation.getLatitude() + "," + currentLocation.getLongitude();
-        Log.v("Location", location);
-        FetchPlacesTask fetchPlacesTask = new FetchPlacesTask(getActivity());
-        fetchPlacesTask.execute(category, location);
     }
 
     public void getCurrentLocationAndUpdatePlaces() {
@@ -98,15 +88,13 @@ public class PlacesFragment extends Fragment implements LoaderManager.LoaderCall
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.v("Places", "location found");
                 if (location != null) {
-                    Log.v("Places", "location not null");
                     SharedPreferences sharedPref = getActivity().getSharedPreferences(FILENAME_PREF, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("latitude", location.getLatitude() + "");
                     editor.putString("longitude", location.getLongitude() + "");
                     editor.commit();
-                    updatePlaces(location);
+                    NeighbourhoodSyncAdapter.syncImmediately(getActivity(), category, null, "places");
                     locationManager.removeUpdates(this);
                 }
             }

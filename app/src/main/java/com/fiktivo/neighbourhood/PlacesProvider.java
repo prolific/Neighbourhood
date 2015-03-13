@@ -101,7 +101,6 @@ public class PlacesProvider extends ContentProvider {
                 break;
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        db.close();
         return retCount;
     }
 

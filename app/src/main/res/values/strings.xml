@@ -5,5 +5,8 @@
     <string name="terms">Terms and Privacy Policy</string>
     <string name="title_activity_places">Places</string>
     <string name="title_activity_detail">Details</string>
+    
+    <string name="sync_account_type">neighbourhood.fiktivo.com</string>
+    <string name="content_authority">com.fiktivo.neighbourhood</string>
 
 </resources>

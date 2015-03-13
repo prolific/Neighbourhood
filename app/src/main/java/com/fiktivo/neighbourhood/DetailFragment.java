@@ -1,7 +1,9 @@
 package com.fiktivo.neighbourhood;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
@@ -20,6 +22,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.fiktivo.neighbourhood.sync.NeighbourhoodSyncAdapter;
+import com.fiktivo.neighbourhood.sync.NeighbourhoodSyncService;
 
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -69,8 +74,25 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (placeID.equals(""))
             Toast.makeText(getActivity(), "Please select a place to show details", Toast.LENGTH_LONG).show();
         else {
-            FetchPlaceDetailsTask fetchPlaceDetailsTask = new FetchPlaceDetailsTask(rootView);
-            fetchPlaceDetailsTask.execute(placeID);
+            final BroadcastReceiver syncBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent.hasExtra("Details")) {
+                        String[] strings = intent.getStringArrayExtra("Details");
+                        String placeAddress = strings[0];
+                        String placePhoneNumber = strings[1];
+                        String placeWebsite = strings[2];
+                        ((TextView) rootView.findViewById(R.id.place_address_textview)).setText(placeAddress);
+                        if (!placePhoneNumber.equals(""))
+                            ((TextView) rootView.findViewById(R.id.place_phone_textview)).setText(placePhoneNumber);
+                        if (!placeWebsite.equals(""))
+                            ((TextView) rootView.findViewById(R.id.place_website_textview)).setText(placeWebsite);
+                        getActivity().unregisterReceiver(this);
+                    }
+                }
+            };
+            getActivity().registerReceiver(syncBroadcastReceiver, new IntentFilter(NeighbourhoodSyncService.SYNC_FIINISHED));
+            NeighbourhoodSyncAdapter.syncImmediately(getActivity(), null, placeID, "details");
         }
     }
 
