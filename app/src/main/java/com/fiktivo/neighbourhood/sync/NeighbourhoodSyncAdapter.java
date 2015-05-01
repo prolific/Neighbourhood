@@ -54,7 +54,7 @@ public class NeighbourhoodSyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             final String BASE_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
             final String RANKBY = "distance";
-            final String KEY = "AIzaSyBYDhJCyB_siLvmhJEHCCdOozV7lJbD26E";
+            final String KEY = ""; //PUT YOUR API KEY HERE
             String TYPES = getTypes(CATEGORY);
             SharedPreferences sharedPref = getContext().getSharedPreferences(FILENAME_PREF, Context.MODE_PRIVATE);
             double currentLatitude = Double.parseDouble(sharedPref.getString("latitude", ""));
